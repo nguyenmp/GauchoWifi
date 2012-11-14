@@ -39,16 +39,16 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		
 		//Remove previous unencrypted credential stores
-		prefs.edit().remove(LoginActivity.KEY_USERNAME).remove(LoginActivity.KEY_PASSWORD).commit();
+		prefs.edit().remove(LoginFragment.KEY_USERNAME).remove(LoginFragment.KEY_PASSWORD).commit();
 		
 		//Use encrypted stores instead
 		ObscuredSharedPreferences obscuredPrefs = new ObscuredSharedPreferences(context, prefs);
 		
 		//If a username and password exists in the preferences
-		if (obscuredPrefs.contains(LoginActivity.KEY_USERNAME_BASE64) && obscuredPrefs.contains(LoginActivity.KEY_PASSWORD_BASE64)) {
+		if (obscuredPrefs.contains(LoginFragment.KEY_USERNAME_BASE64) && obscuredPrefs.contains(LoginFragment.KEY_PASSWORD_BASE64)) {
 			//Launch handler thread because we have all the information now
 			LoginHandler handler = new LoginHandler(context);
-			HandledThread thread = new BroadcastHandlerThread(intent, context, obscuredPrefs.getString(LoginActivity.KEY_USERNAME_BASE64, ""), obscuredPrefs.getString(LoginActivity.KEY_PASSWORD_BASE64, ""));
+			HandledThread thread = new BroadcastHandlerThread(intent, context, obscuredPrefs.getString(LoginFragment.KEY_USERNAME_BASE64, ""), obscuredPrefs.getString(LoginFragment.KEY_PASSWORD_BASE64, ""));
 			thread.setHandler(handler);
 			thread.setPriority(Thread.MIN_PRIORITY);
 			thread.start();
