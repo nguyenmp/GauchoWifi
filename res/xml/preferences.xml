@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <CheckBoxPreference 
+        android:key="auto_log_in_enabled" 
+        android:title="Auto Log In" 
+        android:summary="Enables automatic login for UCSB Wireless Web" 
+        android:defaultValue="true" />
+    <PreferenceCategory 
+        android:title="Notification" >
+        <CheckBoxPreference 
+            android:title="Enable Notifications" 
+            android:disableDependentsState="false"
+            android:key="notification_enabled" 
+            android:summary="Show notifications in status bar" 
+            android:defaultValue="true"/>
+        <CheckBoxPreference 
+            android:title="Enable Ringtone" 
+            android:key="notification_ringtone_enabled" 
+            android:defaultValue="true" 
+            android:dependency="notification_enabled"
+            android:summary="To be added"/>
+        <RingtonePreference 
+            android:ringtoneType="all" 
+            android:key="notification_ringtone" 
+            android:dependency="notification_enabled"
+            android:title="Ringtone" 
+            android:summary="To be added"/>
+        <CheckBoxPreference 
+            android:title="Enable Vibrate" 
+            android:key="notification_vibrate_enabled" 
+            android:dependency="notification_enabled"
+            android:defaultValue="true" 
+            android:summary="To be added"/>
+        <Preference 
+            android:title="Vibrate Pattern" 
+            android:dependency="notification_enabled"
+            android:key="notification_vibrate_pattern" 
+            android:summary="To be added"/>
+    </PreferenceCategory>
+    <PreferenceCategory 
+        android:title="Logging" >
+        <CheckBoxPreference 
+            android:title="Enable Logging" 
+            android:key="logging_enabled" 
+            android:summary="To be added" 
+            android:defaultValue="true"/>
+    </PreferenceCategory>
+</PreferenceScreen>

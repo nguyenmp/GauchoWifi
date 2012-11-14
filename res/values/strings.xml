@@ -6,6 +6,7 @@
     <string name="username">Username</string>
     <string name="password">Password</string>
     <string name="store">Store</string>
+    <string name="check">Check</string>
     <string name="title_activity_network_change_reciever">NetworkChangeReciever</string>
 
 </resources>

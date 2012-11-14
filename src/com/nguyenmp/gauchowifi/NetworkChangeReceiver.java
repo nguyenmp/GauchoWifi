@@ -45,7 +45,7 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 		ObscuredSharedPreferences obscuredPrefs = new ObscuredSharedPreferences(context, prefs);
 		
 		//If a username and password exists in the preferences
-		if (obscuredPrefs.contains(LoginFragment.KEY_USERNAME_BASE64) && obscuredPrefs.contains(LoginFragment.KEY_PASSWORD_BASE64)) {
+		if (prefs.getBoolean("auto_log_in_enabled", true) && obscuredPrefs.contains(LoginFragment.KEY_USERNAME_BASE64) && obscuredPrefs.contains(LoginFragment.KEY_PASSWORD_BASE64)) {
 			//Launch handler thread because we have all the information now
 			LoginHandler handler = new LoginHandler(context);
 			HandledThread thread = new BroadcastHandlerThread(intent, context, obscuredPrefs.getString(LoginFragment.KEY_USERNAME_BASE64, ""), obscuredPrefs.getString(LoginFragment.KEY_PASSWORD_BASE64, ""));
@@ -228,7 +228,9 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 		}
 		
 		public void handleMessage(Message message) {
-			if (message.obj instanceof Integer) {
+			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
+			
+			if (prefs.getBoolean("notification_enabled", true) && message.obj instanceof Integer) {
 				String statusMessage = parseStatusCode((Integer) message.obj);
 				NotificationCompat.Builder notifBuilder = new NotificationCompat.Builder(mContext);
 				notifBuilder.setSmallIcon(android.R.drawable.arrow_down_float);
@@ -237,7 +239,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 				notifBuilder.setContentTitle("UCSB Wireless Web");
 				notifBuilder.setContentText(statusMessage);
 				notifBuilder.setOngoing(false);
-				notifBuilder.setOnlyAlertOnce(true);
 				notifBuilder.setAutoCancel(false);
 				
 				Intent logoutIntent = new Intent(Intent.ACTION_VIEW);

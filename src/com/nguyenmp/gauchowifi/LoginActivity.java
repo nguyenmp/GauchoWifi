@@ -1,10 +1,13 @@
 package com.nguyenmp.gauchowifi;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 public class LoginActivity extends SherlockFragmentActivity {
 	private ViewPager mViewPager;
@@ -25,5 +28,25 @@ public class LoginActivity extends SherlockFragmentActivity {
 		//Add the site news to the list
 		mTabsAdapter.addTab(actionBar.newTab().setText("Login"), LoginFragment.class, null);
 		mTabsAdapter.addTab(actionBar.newTab().setText("Log"), LogFragment.class, null);
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.clear();
+		menu.add("Settings");
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home) {
+			finish();
+			return true;
+		} else if (item.getTitle().equals("Settings")) {
+			Intent intent = new Intent(this, SettingsActivity.class);
+			startActivity(intent);
+		}
+		
+		return super.onOptionsItemSelected(item);
 	}
 }
