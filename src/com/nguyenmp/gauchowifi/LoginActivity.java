@@ -33,7 +33,7 @@ public class LoginActivity extends SherlockFragmentActivity {
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		menu.clear();
-		menu.add("Settings");
+		menu.add("Settings").setIcon(R.drawable.ic_menu_settings_holo_light).setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
 		return true;
 	}
 	
