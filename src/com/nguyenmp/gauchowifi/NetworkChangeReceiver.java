@@ -208,13 +208,23 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 				//There is connectivity and connection is changing
 				ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
 				NetworkInfo info = connManager.getActiveNetworkInfo();
-				System.out.println("Network Type:" + info.getTypeName());
-				try {
-					if (info.getType() == ConnectivityManager.TYPE_WIFI && hasCaptivePortal()) {
-						dispatchMessage(login(mUsername, mPassword));
+				
+				if (info != null) {
+					//Sometimes, the connection changes rapidly so we 
+					//get the intent that there was connectivity but 
+					//it was imediately cut off.  For example, enter 
+					//a building and then imediately turn off wifi as 
+					//you connect to the access point.
+					
+					System.out.println("Network Type:" + info.getTypeName());
+					try {
+						if (info.getType() == ConnectivityManager.TYPE_WIFI && hasCaptivePortal()) {
+							//Only log in if we are connect to WIFI and we have a captive portal
+							dispatchMessage(login(mUsername, mPassword));
+						}
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
 			}
 		}
