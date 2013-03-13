@@ -1,18 +1,17 @@
 package com.nguyenmp.gauchowifi;
 
-import java.util.Map;
-import java.util.Set;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.provider.Settings;
+import android.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.PBEParameterSpec;
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.provider.Settings;
-import android.util.Base64;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Warning, this gives a false sense of security.  If an attacker has enough access to

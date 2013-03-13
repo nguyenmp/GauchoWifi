@@ -3,13 +3,12 @@ package com.nguyenmp.gauchowifi;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
-
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import org.holoeverywhere.app.Activity;
 
-public class LoginActivity extends SherlockFragmentActivity {
+public class LoginActivity extends Activity {
 	private ViewPager mViewPager;
 	private TabsAdapter mTabsAdapter;
 	

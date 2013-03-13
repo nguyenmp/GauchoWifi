@@ -1,16 +1,5 @@
 package com.nguyenmp.gauchowifi;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-
-import org.apache.http.client.ClientProtocolException;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -27,14 +16,22 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import org.apache.http.client.ClientProtocolException;
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
 	private static final int NOTIFICATION_ID = 1;
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		System.out.println("Received Connection Changed");
-		
 		//Get shared preferences
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 		
@@ -50,20 +47,18 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 			LoginHandler handler = new LoginHandler(context);
 			HandledThread thread = new BroadcastHandlerThread(intent, context, obscuredPrefs.getString(LoginFragment.KEY_USERNAME_BASE64, ""), obscuredPrefs.getString(LoginFragment.KEY_PASSWORD_BASE64, ""));
 			thread.setHandler(handler);
-			thread.setPriority(Thread.MIN_PRIORITY);
 			thread.start();
 		}
 	}
 	
-	public static boolean hasCaptivePortal() throws ClientProtocolException, IOException {
+	public static boolean hasCaptivePortal() throws IOException {
 		URL url = new URL("http://clients1.google.com/generate_204");
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		
 		if (conn.getResponseCode() == 204) {
-			System.out.println("204 Generator Succeeded.  No Captive Portal detected.");
 			return false;
 		}
-		System.out.println("Captive Portal detected!");
+		
 		return true;
 	}
 	
@@ -84,11 +79,11 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 	}
 	
 	
-	private static int login(String unencodedUsername, String unencodedPassword) throws IOException {
+	private static int login(String loginURL, String unencodedUsername, String unencodedPassword) throws IOException {
 		URL url;
 		
 		try {
-			url = new URL("https://login.wireless.ucsb.edu/login.html");
+			url = new URL(loginURL);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return -1;
@@ -161,7 +156,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 
 	private static int parseLocationHeader(String locationHeaderValue) throws MalformedURLException {
 		if (locationHeaderValue != null && locationHeaderValue.contains("statusCode=")) {
-//				String redirectUrl = locationHeaderValue;
 			String query = locationHeaderValue;
 			
 			//Get the err_flag parameter
@@ -202,8 +196,6 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 		public void run() {
 			boolean noConnectivity = mIntent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
 			
-			System.out.println("No connectivity: " + noConnectivity);
-			
 			if (!noConnectivity) {
 				//There is connectivity and connection is changing
 				ConnectivityManager connManager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -216,11 +208,14 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 					//a building and then imediately turn off wifi as 
 					//you connect to the access point.
 					
-					System.out.println("Network Type:" + info.getTypeName());
 					try {
 						if (info.getType() == ConnectivityManager.TYPE_WIFI && hasCaptivePortal()) {
 							//Only log in if we are connect to WIFI and we have a captive portal
-							dispatchMessage(login(mUsername, mPassword));
+							URL captiveportalURL = new URL("http://clients1.google.com/generate_204");
+							HttpURLConnection conn = (HttpURLConnection) captiveportalURL.openConnection();
+							conn.setInstanceFollowRedirects(false);
+							String url = conn.getHeaderField("Location");
+							if (url.matches("^https://login[0-9]*.wireless.ucsb.edu/login.html")) dispatchMessage(login(url, mUsername, mPassword));
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -247,15 +242,16 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 				Bitmap largeIcon = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_launcher);
 				notifBuilder.setLargeIcon(largeIcon);
 				notifBuilder.setContentTitle("UCSB Wireless Web");
+				notifBuilder.setTicker(statusMessage);
 				notifBuilder.setContentText(statusMessage);
 				notifBuilder.setOngoing(false);
 				notifBuilder.setAutoCancel(false);
 				
-				Intent logoutIntent = new Intent(Intent.ACTION_VIEW);
-				logoutIntent.setData(Uri.parse("http://login.wireless.ucsb.edu/logout.html"));
+				Intent showMessageIntent = new Intent(mContext, ShowMessageActivity.class);
+				showMessageIntent.putExtra(ShowMessageActivity.EXTRA_MESSAGE, statusMessage);
 				
-				PendingIntent pendingLogoutIntent = PendingIntent.getActivity(mContext, 0, logoutIntent, 0);
-				notifBuilder.setContentIntent(pendingLogoutIntent);
+				PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, showMessageIntent, 0);
+				notifBuilder.setContentIntent(pendingIntent);
 				
 				Notification notif = notifBuilder.build();
 				NotificationManager notifMan = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);

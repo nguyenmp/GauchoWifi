@@ -1,5 +1,21 @@
 package com.nguyenmp.gauchowifi;
 
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.preference.PreferenceManager;
+import android.util.Base64;
+import android.view.View;
+import android.view.ViewGroup;
+import org.holoeverywhere.LayoutInflater;
+import org.holoeverywhere.app.AlertDialog;
+import org.holoeverywhere.app.Fragment;
+import org.holoeverywhere.app.ProgressDialog;
+import org.holoeverywhere.widget.Button;
+import org.holoeverywhere.widget.EditText;
+import org.holoeverywhere.widget.Toast;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,25 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.preference.PreferenceManager;
-import android.util.Base64;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ProgressBar;
-import android.widget.Toast;
-
-import com.actionbarsherlock.app.SherlockFragment;
-
-public class LoginFragment extends SherlockFragment {
+public class LoginFragment extends Fragment {
 	public static final String KEY_USERNAME = "username_key";
 	public static final String KEY_PASSWORD = "password_key";
 	/**
@@ -149,7 +147,7 @@ public class LoginFragment extends SherlockFragment {
 		}
 	}
 	
-	private static boolean login(String username, String password) throws MalformedURLException, IOException {
+	private static boolean login(String username, String password) throws IOException {
 		//Create the get url connection
 		byte[] encodedPassword = Base64.encode(password.getBytes(), Base64.DEFAULT);
 		String url = String.format("https://secure.identity.ucsb.edu/netid_diags/?rs=diags_authenticate&rst=&rsrnd=&rsargs[]=%s&rsargs[]=%s", URLEncoder.encode(username, "UTF-8"), URLEncoder.encode(new String(encodedPassword), "UTF-8"));

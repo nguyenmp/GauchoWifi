@@ -1,22 +1,19 @@
 package com.nguyenmp.gauchowifi;
 
+import android.os.Bundle;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
+import android.view.View;
+import com.actionbarsherlock.app.ActionBar;
+import org.holoeverywhere.app.Activity;
+import org.holoeverywhere.app.Fragment;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.app.Activity;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewPager;
-import android.view.View;
-
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.ActionBar.Tab;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 public class TabsAdapter extends FragmentStatePagerAdapter
 			implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
@@ -35,7 +32,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter
 		}
 	}
 	
-	public TabsAdapter(SherlockFragmentActivity activity, ViewPager pager) {
+	public TabsAdapter(Activity activity, ViewPager pager) {
 		super(activity.getSupportFragmentManager());
 		mActivity = activity;
 		mActionBar = activity.getSupportActionBar();
@@ -77,7 +74,7 @@ public class TabsAdapter extends FragmentStatePagerAdapter
 		selectInSpinnerIfPresent(position, true);
 	}
 
-	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
 		mViewPager.setCurrentItem(tab.getPosition());
 		Object tag = tab.getTag();
 		for (int i = 0; i < mTabs.size(); i++) {
@@ -88,11 +85,11 @@ public class TabsAdapter extends FragmentStatePagerAdapter
 		
 	}
 
-	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+	public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
 		//Do nothing
 	}
 
-	public void onTabReselected(Tab tab, FragmentTransaction ft) {
+	public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
 		//Do nothing
 	}
 	
