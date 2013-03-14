@@ -11,12 +11,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import org.apache.http.client.ClientProtocolException;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -72,18 +70,26 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 			conn.setRequestProperty("Content-Length", "0");
 			
 			conn.setDoInput(false);
-			conn.setDoOutput(false);
+			conn.setDoOutput(true);
+			
+			DataOutputStream outputStream = new DataOutputStream(conn.getOutputStream());
+			outputStream.write("userStatus=1&err_flag=0&err_msg=".getBytes());
+			outputStream.flush();
+			outputStream.close();
+			
+			
+			
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	
-	private static int login(String loginURL, String unencodedUsername, String unencodedPassword) throws IOException {
+	private static int login(String unencodedUsername, String unencodedPassword) throws IOException {
 		URL url;
 		
 		try {
-			url = new URL(loginURL);
+			url = new URL("https://login.wireless.ucsb.edu/login.html");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 			return -1;
@@ -204,18 +210,20 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
 				if (info != null) {
 					//Sometimes, the connection changes rapidly so we 
 					//get the intent that there was connectivity but 
-					//it was imediately cut off.  For example, enter 
-					//a building and then imediately turn off wifi as 
+					//it was immediately cut off.  For example, enter 
+					//a building and then immediately turn off wifi as 
 					//you connect to the access point.
 					
 					try {
-						if (info.getType() == ConnectivityManager.TYPE_WIFI && hasCaptivePortal()) {
-							//Only log in if we are connect to WIFI and we have a captive portal
-							URL captiveportalURL = new URL("http://clients1.google.com/generate_204");
-							HttpURLConnection conn = (HttpURLConnection) captiveportalURL.openConnection();
+						if (info.getType() == ConnectivityManager.TYPE_WIFI) {
+							//Check for captive portal if we are connect to WIFI
+							URL generatorURL = new URL("http://clients1.google.com/generate_204");
+							HttpURLConnection conn = (HttpURLConnection) generatorURL.openConnection();
 							conn.setInstanceFollowRedirects(false);
+							
+							//If we have a UCSB captive portal log in.
 							String url = conn.getHeaderField("Location");
-							if (url.matches("^https://login[0-9]*.wireless.ucsb.edu/login.html")) dispatchMessage(login(url, mUsername, mPassword));
+							if (url != null && url.matches("^https://login[0-9]*\\.wireless\\.ucsb\\.edu/.*")) dispatchMessage(login(mUsername, mPassword));
 						}
 					} catch (IOException e) {
 						e.printStackTrace();

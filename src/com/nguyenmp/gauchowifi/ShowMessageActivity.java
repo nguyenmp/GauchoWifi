@@ -1,5 +1,7 @@
 package com.nguyenmp.gauchowifi;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import org.holoeverywhere.app.Activity;
@@ -26,16 +28,9 @@ public class ShowMessageActivity extends Activity {
 		logout.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				new Thread() {
-					@Override
-					public void run() {
-						try {
-							NetworkChangeReceiver.logout();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}.start();
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(Uri.parse("https://login.wireless.ucsb.edu/logout.html"));
+				startActivity(intent);
 			}
 		});
 	}
